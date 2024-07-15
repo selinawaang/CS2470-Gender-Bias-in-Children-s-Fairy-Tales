@@ -1,5 +1,4 @@
-# Gender Bias in Children Fairy Tales
-**Contributors:** Ran An, Li Feng, Selina Wang
+![intro](figs/intro.png)
 
 ## Introduction
 
@@ -27,39 +26,42 @@ We trained three model architectures:
 3. Transformer for a Masked Language Modeling (MLM) task
 
 ### MLM Model Architecture
-For the MLM task, we randomly masked one word in each input sequence and aimed to predict it. The bi-directional LSTM and Transformer blocks used context from both before and after the masked word.
+For the MLM task, we randomly masked one word in each input sequence and aimed to predict it. Our output is the predicted probability of each word in our vocabulary, and we calculate our loss using the cross-entropy loss. We chose this architecture because it allows us to use context from both before and after the word we are trying to predict. We can also take advantage of the MLM task to do some interesting downstream analysis to analyze bias.
+
+![MLM](figs/MLM.png)
 
 ### Bias Measurement
-1. **Masked Language Modeling Task**: We examined predicted probabilities for gender associations with words (e.g., 'flower' with 'she' vs. 'he').
+1. **Masked Language Modeling Task**: We examined predicted probabilities for gender associations with words (e.g., 'flower' with 'she' vs. 'he'). ![MLM_bias](figs/MLM_bias.png)
 2. **Embedding Matrices**: We analyzed the cosine similarity between word embeddings to detect gender bias.
-3. **Q Value Calculation**: We introduced a new value, Q, based on the eigenvalues of the covariance matrix to measure bias in word pairs.
+3. **Q Value Calculation**:We introduced a new value, Q, which gives a quantitative measurement of bias in a set of word pairs. It is calculated as follows:
+   
+    f_words = ‘she her woman daughter mother sister  queen girl aunt princess ‘ +
+                   ‘girl girl her her’  
+    m_words = ‘he  his man son father brother king boy  uncle  prince’ + 
+                   ‘doctor dog bold brave’  
+    Gender_subspace =span( f_words[i] - m_words[i])  
+    Cov(Gender_subspace) = Cov(f_words[i] - m_words[i])  
+    Q = 1st eigenvalue / 2nd eigenvalue
+       
+    Then, in order to detect gender bias in the target set of words, we construct an enlarged gender subspace by adding target words to m_words set and randomly adding the same number of female words to f_words set. In all three models, Q values increase after adding target words. This shows that our target words do have gender bias. This is within our expectation.
+
 
 ## Results
 
 ### Masked Language Modeling
 Both the Transformer and bi-LSTM models revealed biases, though inconsistencies were noted due to the transformer's higher loss.
 
-| Input Sentence          | Bi-LSTM ('she') | Bi-LSTM ('he') | Transformer ('she') | Transformer ('he') |
-|-------------------------|-----------------|----------------|----------------------|--------------------|
-| [mask] is brave         | 0.284           | 5.286          | 1.292                | 4.378              |
-| [mask] go to adventure  | 2.754           | 6.394          | 0.031                | 12.821             |
-| [mask] is dancer        | 3.714           | 3.499          | 0.750                | 3.807              |
-| [mask] is powerful      | 0.479           | 1.038          | 4.393                | 9.716              |
-| [mask] like flower      | 5.001           | 0.439          | 0.038                | 0.649              |
-| [mask] is evil          | 10.290          | 4.771          | 15.690               | 5.514              |
-| [mask] is farmer        | 0.554           | 0.335          | 0.103                | 11.242             |
-| [mask] is doctor        | 1.685           | 0.042          | 0.471                | 22.043             |
+![result_MLM](figs/result_MLM.png)
 
 ### Embedding Matrices
 
-| Model       | Doctor                                        | Bold                                   | Brave                                  | Dog                                   |
-|-------------|-----------------------------------------------|----------------------------------------|----------------------------------------|---------------------------------------|
-| RNN         | doctor, troutina, girl, she, queen            | bold, her, she, grandmother, queen     | brave, her, merry, bold, naughty       | girl, cat, dog, she, stepmother       |
-| Transformer | she, imaginable, recollecting, knot, skirt    | bold, lapland, compel, shelter, herself| brave, herself, she, compel, her       | she, herself, shelter, her, compel    |
-| Bi-LSTM     | doctor, amuse, extraordinarily, active, addressed | she, forgetting, overjoyed, clever, active | addressed, entreated, whispered, angrily, obstacle | active, sob, wept, submissively, lodging |
+![result_embedding](figs/result_embedding.png)
 
 ### Q Values
 Q values increased after adding target words, indicating gender bias in all three models.
+![Q_rnn](figs/Q_rnn.png)
+![Q_lstm](figs/Q_lstm.png)
+![Q_transformer](figs/Q_transformer.png)
 
 ## Challenges
 
@@ -83,6 +85,3 @@ Our project successfully trained models and performed bias analysis. We expanded
 - Kurita, K., Vyas, N., Pareek, A., Black, A. W., & Tsvetkov, Y. (2019). Measuring bias in contextualized word representations. Proceedings of the First Workshop on Gender Bias in Natural Language Processing. https://doi.org/10.18653/v1/w19-3823
 - Schröder, S., Schulz, A., Kenneweg, P., Feldhans, R., Hinder, F., & Hammer, B. (n.d.). Evaluating Metrics for Bias in Word Embeddings. https://doi.org/10.48550/arXiv.2111.07864
 
----
-
-This README provides a concise overview of your project, including the methodology, results, challenges, and future work, making it an excellent addition to your portfolio.
