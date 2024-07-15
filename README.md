@@ -49,12 +49,12 @@ For the MLM task, we randomly masked one word in each input sequence and aimed t
 ## Results
 
 ### Masked Language Modeling
-Both the Transformer and bi-LSTM models revealed biases, though inconsistencies were noted due to the transformer's higher loss.
+Both the Transformer and Bi-directional LSTM models revealed biases, though inconsistencies were noted due to the transformer's higher loss.
 
 ![result_MLM](figs/result_MLM.png)
 
-### Embedding Matrices
-
+### Cosine Similarity in Embedding Matrices
+We want to find the top 5 words which have the smallest cosine similarity to ‘he - she + target word’. And the following table shows some of the results. In RNN model and Transformer model, the gender bias is clear while in Bi-directional LSTM, it rarely shows direct gender bias. 
 ![result_embedding](figs/result_embedding.png)
 
 ### Q Values
@@ -85,3 +85,6 @@ Our project successfully trained models and performed bias analysis. We expanded
 - Kurita, K., Vyas, N., Pareek, A., Black, A. W., & Tsvetkov, Y. (2019). Measuring bias in contextualized word representations. Proceedings of the First Workshop on Gender Bias in Natural Language Processing. https://doi.org/10.18653/v1/w19-3823
 - Schröder, S., Schulz, A., Kenneweg, P., Feldhans, R., Hinder, F., & Hammer, B. (n.d.). Evaluating Metrics for Bias in Word Embeddings. https://doi.org/10.48550/arXiv.2111.07864
 
+![conclusions](figs/conclusions.png)
+
+![thanks](figs/thanks.png)
